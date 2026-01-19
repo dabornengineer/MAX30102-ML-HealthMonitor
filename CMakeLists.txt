@@ -3,4 +3,8 @@
 cmake_minimum_required(VERSION 3.16)
 
 include($ENV{IDF_PATH}/tools/cmake/project.cmake)
+
+#The component directory
+set(EXTRA_COMPONENT_DIRS $ENV{HOME}/esp/components)
+
 project(MAX30102-ML-HealthMonitor)
