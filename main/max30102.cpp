@@ -7,43 +7,34 @@
 #include "esp_log.h"
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
+#include "main.h"
 
 #include "heartRate.h"
 
 MAX30105 particleSensor;
 
-const byte RATE_SIZE = 4; //Increase this for more averaging. 4 is good.
-byte rates[RATE_SIZE]; //Array of heart rates
-byte rateSpot = 0;
-long lastBeat = 0; //Time at which the last beat occurred
-
-float beatsPerMinute;
-int beatAvg;
-void max30102_Task(void *pvParameters);
-
 void init_MAX30102(void)
 {
-  //Serial.begin(115200);
-  //Serial.println("Initializing...");
-
-  // Initialize sensor
+  
   if (!particleSensor.begin(Wire, I2C_SPEED_FAST)) //Use default I2C port, 400kHz speed
   {
     ESP_LOGI("MAX30102", "MAX30105 was not found. Please check wiring/power. ");
     while (1);
   }
-    //ESP_LOGI("MAX30102", "Place your index finger on the sensor with steady pressure.");
 
   particleSensor.setup(); //Configure sensor with default settings
   particleSensor.setPulseAmplitudeRed(0x0A); //Turn Red LED to low to indicate sensor is running
-  //particleSensor.setPulseAmplitudeGreen(0); //Turn off Green LED
-  //particleSensor.setPulseAmplitudeRed(0x2F);
-  //particleSensor.setPulseAmplitudeIR(0x2F);
-  //xTaskCreate(max30102_Task, "max30102 task", 2048, NULL, 3, NULL);
 }
 
 void max30102_Task(void *pvParameters)
 {
+    const byte RATE_SIZE = 4; //Increase this for more averaging. 4 is good.
+    byte rates[RATE_SIZE]; //Array of heart rates
+    byte rateSpot = 0;
+    long lastBeat = 0; //Time at which the last beat occurred
+
+    float beatsPerMinute;
+    int beatAvg;
     bool fingerPresent = false;
     bool startupMessagePrinted = false;
 
