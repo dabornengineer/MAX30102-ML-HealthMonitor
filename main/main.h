@@ -9,8 +9,10 @@
 extern "C" {
 #endif
 
-void init_MAX30102(void);
-void max30102_Task(void *pvParameters);
+void init_heartrate(void);
+void heartrate_Task(void *pvParameters);
+void init_spo2(void);
+void spo2_task(void *pvParameters);
 
 
 #ifdef __cplusplus

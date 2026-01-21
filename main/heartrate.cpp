@@ -8,25 +8,27 @@
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
 #include "main.h"
+#include "Arduino.h"
 
 #include "heartRate.h"
 
 MAX30105 particleSensor;
 
-void init_MAX30102(void)
+void init_heartrate(void)
 {
+    Wire.begin(25, 26);
   
   if (!particleSensor.begin(Wire, I2C_SPEED_FAST)) //Use default I2C port, 400kHz speed
   {
     ESP_LOGI("MAX30102", "MAX30105 was not found. Please check wiring/power. ");
-    while (1);
+    vTaskDelay(portMAX_DELAY);
   }
 
   particleSensor.setup(); //Configure sensor with default settings
   particleSensor.setPulseAmplitudeRed(0x0A); //Turn Red LED to low to indicate sensor is running
 }
 
-void max30102_Task(void *pvParameters)
+void heartrate_Task(void *pvParameters)
 {
     const byte RATE_SIZE = 4; //Increase this for more averaging. 4 is good.
     byte rates[RATE_SIZE]; //Array of heart rates
@@ -98,6 +100,6 @@ void max30102_Task(void *pvParameters)
             }
         }
 
-        //vTaskDelay(pdMS_TO_TICKS(1));
+        vTaskDelay(pdMS_TO_TICKS(1));
     }
 }
